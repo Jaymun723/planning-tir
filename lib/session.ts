@@ -4,7 +4,7 @@ import { NextApiRequest } from "next"
 export interface ApiRequest extends NextApiRequest {
   session: {
     set(name: string, value: string): void
-    get(name: string): string
+    get(name: string): string | undefined
     unset(name: string): void
     save(): Promise<void>
     destroy(): void

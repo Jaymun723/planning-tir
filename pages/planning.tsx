@@ -1,144 +1,102 @@
-import { useApi } from "../lib/useUser"
+import { useApi } from "../lib/useApi"
 import { User } from "../lib/userDb"
 import { UserWeek } from "../lib/planningDb"
 import moment from "moment"
+import { Planning } from "../components/Planning"
+import Router from "next/router"
 
 moment.locale("fr")
 
-const Planning = () => {
-  const user = useApi<User>("/api/user", { redirectWhenFail: "/" })
-  const planning = useApi<{ weeks: UserWeek[] }>("/api/planning")
+const PlanningPage = () => {
+  const [planning, refetch] = useApi<{ weeks: UserWeek[] }>("/api/planning", { redirectWhenFail: "/" })
+  const [data] = useApi<{ user: User }>("/api/user")
 
-  if (!user || !planning) {
+  if (!planning) {
     return <div>Chargement...</div>
   }
 
   return (
     <div>
-      <table>
-        <thead>
-          <tr>
-            <td className="coin" />
-            {planning.weeks.map((week) => (
-              <th colSpan={Object.keys(week.days).length} scope="col" key={week.weekNumber}>
-                Semaine {week.weekNumber}
-              </th>
-            ))}
-          </tr>
-          <tr>
-            <td className="coin" />
-            {planning.weeks.map((week) => {
-              return Object.keys(week.days).map((dayNumber) => {
-                const date = moment().week(week.weekNumber).weekday(Number(dayNumber))
-                return (
-                  <th scope="col" key={`${dayNumber}-${week.weekNumber}`}>
-                    {date.format("dddd Do")}
-                  </th>
-                )
-              })
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {planning.weeks
-            .reduce((prev, week) => {
-              const startHours = Object.values(week.days).flatMap((day) => Object.keys(day).map(Number))
-              return [...new Set([...prev, ...startHours])]
-            }, [] as number[])
-            .map((startHour) => (
-              <tr key={startHour}>
-                <th scope="row">
-                  {startHour}h-{startHour + 1}h
-                </th>
-                {planning.weeks.map((week) => {
-                  return Object.entries(week.days).map(([dayNumber, day]) => {
-                    console.log(day[startHour])
-                    let Content
-                    if (day[startHour] !== null) {
-                      const { validated } = day[startHour]!
-                      if (validated === true) {
-                        Content = () => <p className="approuve">Approuvé</p>
-                      } else if (validated === false) {
-                        Content = () => <p className="refuse">Refusé</p>
-                      } else {
-                        Content = () => <p className="attente">En attente</p>
-                      }
+      <Planning
+        planning={planning}
+        displayCell={({ dayNumber, startHour, value, weekNumber }) => {
+          if (value !== null) {
+            const { validated } = value
+            if (validated === true) {
+              return () => (
+                <td key={`${weekNumber}-${dayNumber}-${startHour}`} className="approuve">
+                  Approuvé
+                </td>
+              )
+            } else if (validated === false) {
+              return () => (
+                <td key={`${weekNumber}-${dayNumber}-${startHour}`} className="refuse">
+                  Refusé
+                </td>
+              )
+            } else {
+              return () => (
+                <td key={`${weekNumber}-${dayNumber}-${startHour}`} className="attente">
+                  En attente
+                </td>
+              )
+            }
+          } else {
+            return () => (
+              <td
+                key={`${weekNumber}-${dayNumber}-${startHour}`}
+                className="reservation"
+                onClick={() => {
+                  fetch("/api/planning/reserve", {
+                    headers: { "Content-Type": "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({
+                      weekNumber: String(weekNumber),
+                      dayNumber: String(dayNumber),
+                      startHour: String(startHour),
+                    }),
+                  }).then((res) => {
+                    if (res.status === 200) {
+                      refetch()
                     } else {
-                      Content = () => <p className="reservation">Réservez</p>
+                      console.log(res.json())
                     }
-
-                    return (
-                      <td key={`${week.weekNumber}-${dayNumber}-${startHour}`}>
-                        <Content />
-                      </td>
-                    )
                   })
-                })}
-              </tr>
-            ))}
-        </tbody>
-        {/* {Object.keys(planning.weeks[0].days[6]).map((startHour) => (
-          <tr>
-            <th scope="row">
-              {startHour}h-{Number(startHour) + 1}h
-            </th>
-          </tr>
-        ))} */}
-        {/* {planning.weeks.map((week) => (
+                }}
+              >
+                Réservez
+              </td>
+            )
+          }
+        }}
+      />
+      <div>
+        {data?.user && (
           <>
-            {Object.values(week.days).map((day, i, days) => {
-              const startHours = Object.keys(day)
-              return startHours.map((hour) => (
-                <tr>
-                  <th scope="row">
-                    {hour}h-{Number(hour) + 1}h
-                  </th>
-                  {days.map(() => (
-                    <td></td>
-                  ))}
-                </tr>
-              ))
-            })}
+            <p>Connecté en tant que {data.user.name}.</p>
+            {data.user.isAdmin && (
+              <button
+                onClick={() => {
+                  Router.push("/admin")
+                }}
+              >
+                Aller sur la page administrateur
+              </button>
+            )}
           </>
-        ))} */}
-      </table>
-      {/* <table>
-        <tr>
-          <td></td>
-          <th colSpan={2}>Semaine 35</th>
-          <th colSpan={2}>Semaine 36</th>
-        </tr>
-        <tr>
-          <td></td>
-          <th scope="col">Mercredi 03</th>
-          <th scope="col">Dimanche 07</th>
-          <th scope="col">Mercredi 06</th>
-          <th scope="col">Dimanche 14</th>
-        </tr>
-        <tr>
-          <th scope="row">10h-11h</th>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <th scope="row">11h-12h</th>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <th scope="row">12h-13h</th>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table> */}
+        )}
+        <button
+          onClick={() => {
+            fetch("/api/logout").then(() => {
+              Router.push("/")
+            })
+          }}
+        >
+          Se déconnecter
+        </button>
+      </div>
     </div>
   )
 }
 
-export default Planning
+export default PlanningPage

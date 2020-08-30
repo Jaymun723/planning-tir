@@ -1,6 +1,7 @@
 export interface User {
   name: string
   password: string
+  isAdmin: boolean
 }
 
 interface Db {
@@ -12,6 +13,12 @@ const db: Db = {
     {
       name: "Jhon",
       password: "toto",
+      isAdmin: false,
+    },
+    {
+      name: "toto",
+      password: "Jhon",
+      isAdmin: true,
     },
   ],
 }

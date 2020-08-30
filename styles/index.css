@@ -36,3 +36,47 @@ tr:nth-child(odd) td {
 .reservation {
   cursor: pointer;
 }
+
+tr td.attente {
+  background-color: orange;
+}
+
+tr td.refuse {
+  background-color: red;
+}
+
+tr td.approuve {
+  background-color: green;
+}
+
+.utilisateurs {
+  display: flex;
+  flex-direction: column;
+}
+
+.utilisateur {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0px;
+}
+
+.utilisateur:not(:first-child) {
+  border-top: 1px dashed grey;
+}
+
+.utilisateur button {
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 0px 5px;
+  cursor: pointer;
+}
+
+.valide {
+  background-color: green;
+}
+
+.refuse {
+  background-color: red;
+}

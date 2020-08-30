@@ -1,4 +1,11 @@
+import Router from "next/router"
+import { useState } from "react"
+import { useApi } from "../lib/useApi"
+import { User } from "../lib/userDb"
+
 const Index = () => {
+  const [error, setError] = useState("")
+
   return (
     <div>
       <form
@@ -16,9 +23,9 @@ const Index = () => {
             body: JSON.stringify({ name: target.name.value, password: target.password.value }),
           }).then((res) => {
             if (res.status === 200) {
-              console.log("yes !")
+              Router.push("/planning")
             } else {
-              console.log("no !")
+              res.json().then((err) => setError(err.message))
             }
           })
         }}
@@ -27,6 +34,13 @@ const Index = () => {
           flexDirection: "column",
         }}
       >
+        {error && (
+          <p>
+            {error}
+            <br />
+            <button onClick={() => setError("")}>X</button>
+          </p>
+        )}
         <label htmlFor="name">Nom:</label>
         <input type="text" name="name" />
         <label htmlFor="password">Mot de passe:</label>

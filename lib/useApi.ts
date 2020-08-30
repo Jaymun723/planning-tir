@@ -4,6 +4,7 @@ import Router from "next/router"
 
 export const useApi = <T = any>(path: string, ops?: { redirectWhenFail?: string }) => {
   const [res, setRes] = useState(undefined as undefined | T)
+  const [refetchVal, setRefetchVal] = useState(false)
 
   useEffect(() => {
     fetch(path).then((res) => {
@@ -15,7 +16,9 @@ export const useApi = <T = any>(path: string, ops?: { redirectWhenFail?: string 
         res.json().then((data) => setRes(data))
       }
     })
-  }, [path])
+  }, [path, refetchVal])
 
-  return res
+  const refetch = () => setRefetchVal(!refetchVal)
+
+  return [res, refetch] as const
 }
