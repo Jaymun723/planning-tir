@@ -12,6 +12,7 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
 
   if (!name) {
     res.status(401).json({ message: "Connection nécessaire." })
+    return
   }
 
   const todayWeekNumber = moment().week()

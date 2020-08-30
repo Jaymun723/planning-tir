@@ -1,4 +1,1 @@
-{
-  "weekNumber": 36,
-  "days": { "2": { "10": [], "11": [], "12": [], "places": 0 }, "6": { "10": [], "11": [], "12": [], "places": 0 } }
-}
+{"id":36,"days":[{"id":2,"hours":[{"id":10,"value":[],"waiting":0,"accepted":0},{"id":11,"value":[],"waiting":0,"accepted":0},{"id":12,"value":[{"userName":"toto","validated":false},{"userName":"Jhon","validated":false}],"waiting":0,"accepted":0}],"places":0},{"id":6,"hours":[{"id":10,"value":[],"waiting":0,"accepted":0},{"id":11,"value":[{"userName":"toto","validated":false}],"waiting":0,"accepted":0},{"id":12,"value":[],"waiting":0,"accepted":0}],"places":0}]}

@@ -1,13 +1,16 @@
 import Router from "next/router"
 import { useState } from "react"
-import { useApi } from "../lib/useApi"
-import { User } from "../lib/userDb"
+import Head from "next/head"
 
 const Index = () => {
   const [error, setError] = useState("")
 
   return (
-    <div>
+    <div className="page">
+      <Head>
+        <title>Connection | Planning stand de tir 10m Palaiseau</title>
+      </Head>
+      <h1>Planning stand de tir 10m Palaiseau</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()

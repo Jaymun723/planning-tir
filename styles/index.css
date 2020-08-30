@@ -4,6 +4,13 @@ html {
   font-family: "Roboto", sans-serif;
 }
 
+.page {
+  margin-top: 5vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
 table {
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
@@ -33,12 +40,17 @@ tr:nth-child(odd) td {
   background-color: rgb(245, 245, 245);
 }
 
+tr td.coin {
+  border: 0;
+}
+
 .reservation {
   cursor: pointer;
 }
 
 tr td.attente {
   background-color: orange;
+  cursor: pointer;
 }
 
 tr td.refuse {

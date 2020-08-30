@@ -6,7 +6,7 @@ moment.locale("fr")
 
 export interface WeekBase<T> {
   id: number
-  days: { id: number; hours: { id: number; value: T }[]; places: number }[]
+  days: { id: number; hours: { id: number; value: T; waiting: number; accepted: number }[] }[]
 }
 
 interface UserInvoice {
@@ -36,7 +36,7 @@ const createWeek = (weekNumber: number) => {
     id: weekNumber,
     days: WEEK_DAYS.map((id) => ({
       id,
-      hours: START_HOURS.map((id) => ({ id, value: [] as UserInvoice[] })),
+      hours: START_HOURS.map((id) => ({ id, value: [] as UserInvoice[], waiting: 0, accepted: 0 })),
       places: 0,
     })),
   }
@@ -73,11 +73,12 @@ export const getWeeksForUser = async (userName: string, weekNumbers: number[]) =
       days: week.days.map((day) => {
         return {
           id: day.id,
-          places: day.places,
           hours: day.hours.map((hour) => {
             const value = hour.value.find((user) => user.userName === userName)
             return {
               id: hour.id,
+              accepted: hour.accepted,
+              waiting: hour.waiting,
               value: value ? { validated: value.validated } : null,
             }
           }),
@@ -110,7 +111,11 @@ export const setReservation = async (userName: string, weekNumber: number, dayNu
 
   let user = hour.value.find((user) => user.userName === userName)
   if (!user) {
+    hour.waiting++
     hour.value.push({ userName, validated: null })
+  } else {
+    hour.waiting--
+    hour.value = hour.value.filter((user) => user.userName !== userName)
   }
 
   await fs.writeFile(filePath, JSON.stringify(week), { encoding: "utf-8" })
@@ -146,6 +151,18 @@ export const setApproval = async (
     throw new Error("Impossible de trouver cet utilisateur.")
   }
 
+  if (user.validated !== approval) {
+    if (user.validated === null) {
+      hour.waiting--
+      if (approval) {
+        hour.accepted++
+      }
+    } else if (approval) {
+      hour.accepted++
+    } else {
+      hour.accepted--
+    }
+  }
   user.validated = approval
 
   await fs.writeFile(filePath, JSON.stringify(week), { encoding: "utf-8" })
