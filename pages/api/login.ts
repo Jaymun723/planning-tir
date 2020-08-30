@@ -1,5 +1,5 @@
 import { NextApiResponse } from "next"
-import { loginUser } from "../../lib/db"
+import { loginUser } from "../../lib/userDb"
 import { withSession, ApiRequest } from "../../lib/session"
 
 export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
