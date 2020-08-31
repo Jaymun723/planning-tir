@@ -10,7 +10,7 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const user = getUser(name)
+  const user = await getUser(name)
   if (!user || !user?.isAdmin) {
     res.status(401).json({ message: "Vous devez être administrateur." })
     return
@@ -29,13 +29,11 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
 
   if (userName && approval !== undefined && weekNumber && dayNumber && startHour) {
     await setApproval(userName, approval, Number(weekNumber), Number(dayNumber), Number(startHour))
-    res
-      .status(200)
-      .json({
-        message: `Présence ${
-          approval ? "approuvée" : "refusée"
-        } pour ${userName} le jour ${dayNumber} de la semaine ${weekNumber} à ${startHour}h.`,
-      })
+    res.status(200).json({
+      message: `Présence ${
+        approval ? "approuvée" : "refusée"
+      } pour ${userName} le jour ${dayNumber} de la semaine ${weekNumber} à ${startHour}h.`,
+    })
   } else {
     res.status(400).json({ message: "Mauvaise requête." })
   }

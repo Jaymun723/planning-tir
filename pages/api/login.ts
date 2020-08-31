@@ -2,15 +2,19 @@ import { NextApiResponse } from "next"
 import { loginUser } from "../../lib/userDb"
 import { withSession, ApiRequest } from "../../lib/session"
 
-export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
+export default withSession((req: ApiRequest, res: NextApiResponse) => {
   if (req.body.name && req.body.password) {
-    const user = loginUser(req.body.name, req.body.password)
-    if (!user) {
-      res.status(401).json({ message: "Impossible de se connecter." })
-      return
-    }
-    req.session.set("name", user.name)
-    await req.session.save()
-    res.status(200).json({ message: "Connection établie." })
+    loginUser(req.body.name, req.body.password)
+      .then((user) => {
+        req.session.set("name", user.name)
+        req.session.save().then(() => {
+          res.status(200).json({ message: "Connection établie." })
+        })
+      })
+      .catch((err) => {
+        res.status(401).json({ message: err.message })
+      })
+  } else {
+    res.status(400).json({ message: "Mauvaise requête." })
   }
 })

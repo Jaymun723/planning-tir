@@ -14,7 +14,7 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const user = getUser(name)
+  const user = await getUser(name)
   if (!user || !user.isAdmin) {
     res.status(401).json({ message: "Vous devez être administrateur." })
     return

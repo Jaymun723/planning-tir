@@ -1,6 +1,7 @@
-import * as fs from "fs/promises"
-import * as path from "path"
+// import * as fs from "fs/promises"
+// import * as path from "path"
 import moment from "moment"
+import { connectToDb } from "./mongo"
 
 moment.locale("fr")
 
@@ -29,8 +30,8 @@ const WEEK_DAYS = [
 
 const START_HOURS = [10, 11, 12]
 
-const createWeek = (weekNumber: number) => {
-  const filePath = path.resolve(process.cwd(), "planning/", `week-${weekNumber}.json`)
+const createWeek = async (weekNumber: number) => {
+  const { db } = await connectToDb()
 
   const week: Week = {
     id: weekNumber,
@@ -41,26 +42,28 @@ const createWeek = (weekNumber: number) => {
     })),
   }
 
-  return fs.writeFile(filePath, JSON.stringify(week), {
-    encoding: "utf-8",
-  })
+  const weeksCollection = db.collection<Week>("weeks")
+
+  await weeksCollection.insertOne(week)
+
+  return week
 }
 
 export const getWeeks = async (weekNumbers: number[]) => {
+  const { db } = await connectToDb()
+
   const weeks: Week[] = []
+
+  const weeksCollection = db.collection<Week>("weeks")
+
   for (const weekNumber of weekNumbers) {
-    const filePath = path.join(process.cwd(), "planning/", `week-${weekNumber}.json`)
-
-    const fileExist = await fs.stat(filePath).catch((err) => {})
-    if (!fileExist) {
-      await createWeek(weekNumber)
+    let week = await weeksCollection.findOne({ id: weekNumber })
+    if (!week) {
+      week = await createWeek(weekNumber)
     }
-
-    const file = await fs.readFile(filePath, {
-      encoding: "utf-8",
-    })
-    weeks.push(JSON.parse(file))
+    weeks.push(week)
   }
+
   return weeks
 }
 
@@ -91,13 +94,14 @@ export const getWeeksForUser = async (userName: string, weekNumbers: number[]) =
 }
 
 export const setReservation = async (userName: string, weekNumber: number, dayNumber: number, startHour: number) => {
-  const filePath = path.join(process.cwd(), "planning/", `week-${weekNumber}.json`)
+  const { db } = await connectToDb()
 
-  const file = await fs.readFile(filePath, { encoding: "utf-8" }).catch((err) => {})
-  if (!file) {
+  const weeksCollection = db.collection<Week>("weeks")
+
+  let week = await weeksCollection.findOne({ id: weekNumber })
+  if (!week) {
     throw new Error("Impossible de trouver cette semaine.")
   }
-  let week = JSON.parse(file) as Week
 
   let day = week.days.find((day) => day.id === dayNumber)
   if (!day) {
@@ -118,7 +122,7 @@ export const setReservation = async (userName: string, weekNumber: number, dayNu
     hour.value = hour.value.filter((user) => user.userName !== userName)
   }
 
-  await fs.writeFile(filePath, JSON.stringify(week), { encoding: "utf-8" })
+  await weeksCollection.updateOne({ id: weekNumber }, { $set: { days: week.days } })
 }
 
 export const setApproval = async (
@@ -128,13 +132,14 @@ export const setApproval = async (
   dayNumber: number,
   startHour: number
 ) => {
-  const filePath = path.join(process.cwd(), "planning/", `week-${weekNumber}.json`)
+  const { db } = await connectToDb()
 
-  const file = await fs.readFile(filePath, { encoding: "utf-8" }).catch((err) => {})
-  if (!file) {
+  const weeksCollection = db.collection<Week>("weeks")
+
+  let week = await weeksCollection.findOne({ id: weekNumber })
+  if (!week) {
     throw new Error("Impossible de trouver cette semaine.")
   }
-  let week = JSON.parse(file) as Week
 
   let day = week.days.find((day) => day.id === dayNumber)
   if (!day) {
@@ -165,5 +170,5 @@ export const setApproval = async (
   }
   user.validated = approval
 
-  await fs.writeFile(filePath, JSON.stringify(week), { encoding: "utf-8" })
+  await weeksCollection.updateOne({ id: weekNumber }, { $set: { days: week.days } })
 }

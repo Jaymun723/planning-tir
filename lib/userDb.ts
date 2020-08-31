@@ -1,32 +1,38 @@
+import { connectToDb } from "./mongo"
+import { compare } from "bcryptjs"
+
 export interface User {
   name: string
   password: string
   isAdmin: boolean
 }
 
-interface Db {
-  users: User[]
+export const loginUser = async (userName: string, userPassword: string) => {
+  const { db } = await connectToDb()
+
+  const usersCollection = db.collection<User>("users")
+
+  const user = await usersCollection.findOne({ name: userName })
+
+  if (!user) {
+    throw new Error("Échec de la connection.")
+  }
+
+  const hashMatch = compare(userPassword, user.password)
+
+  if (!hashMatch) {
+    throw new Error("Échec de la connection.")
+  }
+
+  return user
 }
 
-const db: Db = {
-  users: [
-    {
-      name: "Jhon",
-      password: "toto",
-      isAdmin: false,
-    },
-    {
-      name: "toto",
-      password: "Jhon",
-      isAdmin: true,
-    },
-  ],
-}
+export const getUser = async (name: string) => {
+  const { db } = await connectToDb()
 
-export const loginUser = (userName: string, userPassword: string) => {
-  return db.users.find((user) => user.name === userName && user.password === userPassword)
-}
+  const usersCollection = db.collection<User>("users")
 
-export const getUser = (name: string) => {
-  return db.users.find((user) => user.name === name)
+  const user = await usersCollection.findOne({ name })
+
+  return user
 }

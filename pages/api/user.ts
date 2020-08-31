@@ -8,5 +8,5 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
     res.status(401).json({ message: "Vous n'êtes pas connecté." })
     return
   }
-  res.status(200).json({ user: getUser(name) })
+  res.status(200).json({ user: await getUser(name) })
 })
