@@ -28,7 +28,10 @@ const WEEK_DAYS = [
   6, // dimanche
 ]
 
-const START_HOURS = [10, 11, 12]
+const START_HOURS: {[dayId:number]:number[]} = {
+  2: [20, 21],
+  6: [10, 11],
+}
 
 const createWeek = async (weekNumber: number) => {
   const { db } = await connectToDb()
@@ -37,7 +40,8 @@ const createWeek = async (weekNumber: number) => {
     id: weekNumber,
     days: WEEK_DAYS.map((id) => ({
       id,
-      hours: START_HOURS.map((id) => ({ id, value: [] as UserInvoice[], waiting: 0, accepted: 0 })),
+      // hours: START_HOURS.map((id) => ({ id, value: [] as UserInvoice[], waiting: 0, accepted: 0 })),
+      hours: START_HOURS[id].map((id) => ({ id, value: [] as UserInvoice[], waiting: 0, accepted: 0 })),
       places: 0,
     })),
   }

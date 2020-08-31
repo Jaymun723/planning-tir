@@ -16,9 +16,8 @@ interface PlanningProps<T> {
   }) => React.ComponentType
 }
 
-const getHours = (weeks: WeekBase<any>[]) => [
-  ...new Set(weeks.flatMap((week) => week.days.flatMap((day) => day.hours.map((hour) => hour.id)))),
-]
+const getHours = (weeks: WeekBase<any>[]) =>
+  [...new Set(weeks.flatMap((week) => week.days.flatMap((day) => day.hours.map((hour) => hour.id))))].sort()
 
 export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
   const startHours = useMemo(() => getHours(planning.weeks), [planning])
@@ -29,9 +28,13 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
         <tr>
           <td className="coin"></td>
           {planning.weeks.map((week) => {
+            const start = moment().week(week.id)
+            const end = moment().week(week.id).add(6, "days")
             return (
               <th colSpan={week.days.length} scope="col" key={week.id}>
                 Semaine {week.id}
+                <br />
+                Du {start.format("Do MMMM")} au {end.format("Do MMMM")}
               </th>
             )
           })}
@@ -44,7 +47,7 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
                 <>
                   {week.days.map((day) => {
                     const date = moment().week(week.id).weekday(day.id)
-                    return <th key={day.id}>{date.format("dddd Do")}</th>
+                    return <th key={day.id}>{date.format("dddd Do MMMM")}</th>
                   })}
                 </>
               )
@@ -54,20 +57,26 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
         </tr>
       </thead>
       <tbody>
-        {startHours.map((hour) => (
-          <tr key={hour}>
+        {startHours.map((startHour) => (
+          <tr key={startHour}>
             <th scope="row">
-              {hour}h-{hour + 1}h
+              {startHour}h-{startHour + 1}h
             </th>
             {planning.weeks.map((week) => {
               const Days = () => {
                 return (
                   <>
                     {week.days.map((day) => {
+                      const hour = day.hours.find((h) => h.id === startHour)
+
+                      if (!hour) {
+                        return <td className="vide" />
+                      }
+
                       const Cell = displayCell({
                         week: week,
                         day: day,
-                        hour: day.hours.find((h) => h.id === hour)!,
+                        hour,
                       })
                       return <Cell key={day.id} />
                     })}
