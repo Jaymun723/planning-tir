@@ -3,9 +3,13 @@ import { Week } from "../lib/planningDb"
 import { Planning } from "../components/Planning"
 import Router from "next/router"
 import Head from "next/head"
+import { UsersHistory } from "../components/UsersHisotry"
+import { UserHistory } from "../lib/usersHistory"
 
 const AdminPage = () => {
-  const [planning, refetch] = useApi<{ weeks: Week[] }>("/api/planning/admin", { redirectWhenFail: "/" })
+  const [planning, refetch] = useApi<{ weeks: Week[]; users: UserHistory[] }>("/api/planning/admin", {
+    redirectWhenFail: "/",
+  })
 
   if (!planning) {
     return <div>Chargement...</div>
@@ -70,6 +74,7 @@ const AdminPage = () => {
           )
         }}
       />
+      <UsersHistory usersHistory={planning.users} />
       <button
         onClick={() => {
           Router.push("/planning")

@@ -63,6 +63,7 @@ tr td.refuse {
 
 tr td.approuve {
   background-color: green;
+  cursor: pointer;
 }
 
 .utilisateurs {
@@ -107,4 +108,8 @@ tr td.approuve {
 
 .text div {
   margin-top: 30px;
+}
+
+.users-history {
+  margin-top: 20px;
 }

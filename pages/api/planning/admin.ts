@@ -4,6 +4,7 @@ import { getUser } from "../../../lib/userDb"
 import { WEEKS_PREVIEW_COUNT } from "./"
 import moment from "moment"
 import { getWeeks } from "../../../lib/planningDb"
+import { getUsersHistory } from "../../../lib/usersHistory"
 
 moment.locale("fr")
 
@@ -26,5 +27,5 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
     weeksNumbers.push(i + todayWeekNumber)
   }
 
-  res.status(200).json({ weeks: await getWeeks(weeksNumbers) })
+  res.status(200).json({ weeks: await getWeeks(weeksNumbers), users: await getUsersHistory() })
 })

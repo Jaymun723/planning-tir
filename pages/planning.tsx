@@ -64,7 +64,7 @@ const PlanningPage = () => {
             const { validated } = place.value
             if (validated === true) {
               return () => (
-                <td key={`${week.id}-${day.id}-${hour.id}`} className="approuve">
+                <td key={`${week.id}-${day.id}-${hour.id}`} className="approuve" onClick={reserve}>
                   <span className="big">Approuvé</span>
                   <Infos />
                 </td>
