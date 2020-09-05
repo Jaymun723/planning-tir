@@ -1,13 +1,21 @@
-// import * as fs from "fs/promises"
-// import * as path from "path"
-import moment from "moment"
 import { connectToDb } from "./mongo"
-
-moment.locale("fr")
+import { WEEK_DAYS, START_HOURS, PLACES, PLACES_MAP } from "./consts"
 
 export interface WeekBase<T> {
   id: number
-  days: { id: number; hours: { id: number; value: T; waiting: number; accepted: number }[] }[]
+  days: {
+    id: number
+    hours: {
+      id: number
+      places: {
+        id: number
+        value: T
+        max: number
+        waiting: number
+        accepted: number
+      }[]
+    }[]
+  }[]
 }
 
 interface UserInvoice {
@@ -18,21 +26,6 @@ interface UserInvoice {
 export type Week = WeekBase<UserInvoice[]>
 export type UserWeek = WeekBase<{ validated: boolean | null } | null>
 
-const WEEK_DAYS = [
-  // 0, // lundi
-  // 1, // mardi
-  2, // mercredi,
-  // 3, // jeudi
-  // 4, // vendredi
-  // 5, // samedi
-  6, // dimanche
-]
-
-const START_HOURS: {[dayId:number]:number[]} = {
-  2: [20, 21],
-  6: [10, 11],
-}
-
 const createWeek = async (weekNumber: number) => {
   const { db } = await connectToDb()
 
@@ -40,8 +33,16 @@ const createWeek = async (weekNumber: number) => {
     id: weekNumber,
     days: WEEK_DAYS.map((id) => ({
       id,
-      // hours: START_HOURS.map((id) => ({ id, value: [] as UserInvoice[], waiting: 0, accepted: 0 })),
-      hours: START_HOURS[id].map((id) => ({ id, value: [] as UserInvoice[], waiting: 0, accepted: 0 })),
+      hours: START_HOURS[id].map((id) => ({
+        id,
+        places: PLACES.map((id) => ({
+          id,
+          value: [] as UserInvoice[],
+          waiting: 0,
+          accepted: 0,
+          max: PLACES_MAP[id].max,
+        })),
+      })),
       places: 0,
     })),
   }
@@ -81,13 +82,26 @@ export const getWeeksForUser = async (userName: string, weekNumbers: number[]) =
         return {
           id: day.id,
           hours: day.hours.map((hour) => {
-            const value = hour.value.find((user) => user.userName === userName)
             return {
               id: hour.id,
-              accepted: hour.accepted,
-              waiting: hour.waiting,
-              value: value ? { validated: value.validated } : null,
+              places: hour.places.map((place) => {
+                const value = place.value.find((user) => user.userName === userName)
+                return {
+                  id: place.id,
+                  accepted: place.accepted,
+                  waiting: place.waiting,
+                  value: value ? { validated: value.validated } : null,
+                  max: place.max,
+                }
+              }),
             }
+            // const value = hour.value.find((user) => user.userName === userName)
+            // return {
+            //   id: hour.id,
+            //   accepted: hour.accepted,
+            //   waiting: hour.waiting,
+            //   value: value ? { validated: value.validated } : null,
+            // }
           }),
         }
       }),
@@ -97,82 +111,96 @@ export const getWeeksForUser = async (userName: string, weekNumbers: number[]) =
   return res
 }
 
-export const setReservation = async (userName: string, weekNumber: number, dayNumber: number, startHour: number) => {
+interface SetReservationOptions {
+  name: string
+  week: number
+  day: number
+  hour: number
+  place: number
+}
+export const setReservation = async (ops: SetReservationOptions) => {
   const { db } = await connectToDb()
 
   const weeksCollection = db.collection<Week>("weeks")
 
-  let week = await weeksCollection.findOne({ id: weekNumber })
+  let week = await weeksCollection.findOne({ id: ops.week })
   if (!week) {
     throw new Error("Impossible de trouver cette semaine.")
   }
 
-  let day = week.days.find((day) => day.id === dayNumber)
+  let day = week.days.find((day) => day.id === ops.day)
   if (!day) {
     throw new Error("Ce jour n'est pas disponible dans cette semaine.")
   }
 
-  let hour = day.hours.find((hour) => hour.id === startHour)
+  let hour = day.hours.find((hour) => hour.id === ops.hour)
   if (!hour) {
     throw new Error("Cette heure n'est pas disponible à ce jour.")
   }
 
-  let user = hour.value.find((user) => user.userName === userName)
-  if (!user) {
-    hour.waiting++
-    hour.value.push({ userName, validated: null })
-  } else {
-    hour.waiting--
-    hour.value = hour.value.filter((user) => user.userName !== userName)
+  let place = hour.places.find((place) => place.id === ops.place)
+  if (!place) {
+    throw new Error("Cette place n'éxiste pas.")
   }
 
-  await weeksCollection.updateOne({ id: weekNumber }, { $set: { days: week.days } })
+  let user = place.value.find((user) => user.userName === ops.name)
+  if (!user) {
+    place.waiting++
+    place.value.push({ userName: ops.name, validated: null })
+  } else {
+    place.waiting--
+    place.value = place.value.filter((user) => user.userName !== ops.name)
+  }
+
+  await weeksCollection.updateOne({ id: ops.week }, { $set: { days: week.days } })
 }
 
-export const setApproval = async (
-  userName: string,
-  approval: boolean,
-  weekNumber: number,
-  dayNumber: number,
-  startHour: number
-) => {
+interface SetApprovalOptions extends SetReservationOptions {
+  approval: boolean
+}
+export const setApproval = async (ops: SetApprovalOptions) => {
   const { db } = await connectToDb()
 
   const weeksCollection = db.collection<Week>("weeks")
 
-  let week = await weeksCollection.findOne({ id: weekNumber })
+  let week = await weeksCollection.findOne({ id: ops.week })
   if (!week) {
     throw new Error("Impossible de trouver cette semaine.")
   }
 
-  let day = week.days.find((day) => day.id === dayNumber)
+  let day = week.days.find((day) => day.id === ops.day)
   if (!day) {
     throw new Error("Ce jour n'est pas disponible dans cette semaine.")
   }
 
-  let hour = day.hours.find((hour) => hour.id === startHour)
+  let hour = day.hours.find((hour) => hour.id === ops.hour)
   if (!hour) {
     throw new Error("Cette heure n'est pas disponible à ce jour.")
   }
 
-  let user = hour.value.find((user) => user.userName === userName)
+  let place = hour.places.find((place) => place.id === ops.place)
+  if (!place) {
+    throw new Error("Cette place n'éxiste pas.")
+  }
+
+  let user = place.value.find((user) => user.userName === ops.name)
   if (!user) {
     throw new Error("Impossible de trouver cet utilisateur.")
   }
 
-  if (user.validated !== approval) {
+  if (user.validated !== ops.approval) {
     if (user.validated === null) {
-      hour.waiting--
-      if (approval) {
-        hour.accepted++
+      place.waiting--
+      if (ops.approval) {
+        place.accepted++
       }
-    } else if (approval) {
-      hour.accepted++
+    } else if (ops.approval) {
+      place.accepted++
     } else {
-      hour.accepted--
+      place.accepted--
     }
   }
-  user.validated = approval
+  user.validated = ops.approval
 
-  await weeksCollection.updateOne({ id: weekNumber }, { $set: { days: week.days } })
+  await weeksCollection.updateOne({ id: ops.week }, { $set: { days: week.days } })
 }

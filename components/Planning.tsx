@@ -1,6 +1,6 @@
 import { WeekBase } from "../lib/planningDb"
+import { PLACES_MAP } from "../lib/consts"
 import moment from "moment"
-import planning from "../pages/api/planning"
 import { useMemo } from "react"
 
 moment.locale("fr")
@@ -13,6 +13,7 @@ interface PlanningProps<T> {
     week: WeekBase<T>
     day: WeekBase<T>["days"][0]
     hour: WeekBase<T>["days"][0]["hours"][0]
+    place: WeekBase<T>["days"][0]["hours"][0]["places"][0]
   }) => React.ComponentType
 }
 
@@ -41,6 +42,7 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
         </tr>
         <tr>
           <td className="coin"></td>
+          <td>Type de place</td>
           {planning.weeks.map((week) => {
             const Days = () => {
               return (
@@ -57,36 +59,65 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
         </tr>
       </thead>
       <tbody>
-        {startHours.map((startHour) => (
-          <tr key={startHour}>
-            <th scope="row">
-              {startHour}h-{startHour + 1}h
-            </th>
-            {planning.weeks.map((week) => {
-              const Days = () => {
-                return (
-                  <>
-                    {week.days.map((day) => {
-                      const hour = day.hours.find((h) => h.id === startHour)
+        {startHours.map((startHour) => {
+          const Days = ({ week, startHour, placeId }: { week: WeekBase<T>; startHour: number; placeId: number }) => {
+            return (
+              <>
+                {week.days.map((day) => {
+                  const hour = day.hours.find((h) => h.id === startHour)
 
-                      if (!hour) {
-                        return <td className="vide" />
-                      }
+                  if (!hour) {
+                    return <td className="vide" key={day.id} />
+                  }
 
-                      const Cell = displayCell({
-                        week: week,
-                        day: day,
-                        hour,
-                      })
-                      return <Cell key={day.id} />
-                    })}
-                  </>
-                )
-              }
-              return <Days key={week.id} />
-            })}
-          </tr>
-        ))}
+                  const place = hour.places.find((p) => p.id === placeId)
+
+                  if (!place) {
+                    return <td className="vide" key={day.id} />
+                  }
+
+                  const Cell = displayCell({
+                    week: week,
+                    day: day,
+                    hour,
+                    place,
+                  })
+                  return <Cell key={day.id} />
+                })}
+              </>
+            )
+          }
+
+          const StartHour = ({ id }: { id: number }) => {
+            return (
+              <>
+                <tr>
+                  <th scope="row" rowSpan={2}>
+                    {startHour}h-{startHour + 1}h
+                  </th>
+                  <th>
+                    {PLACES_MAP[0].name}: <br />
+                    {PLACES_MAP[0].max} places
+                  </th>
+                  {planning.weeks.map((week) => (
+                    <Days key={week.id} week={week} placeId={0} startHour={id} />
+                  ))}
+                </tr>
+                <tr>
+                  <th>
+                    {PLACES_MAP[1].name}: <br />
+                    {PLACES_MAP[1].max} place
+                  </th>
+                  {planning.weeks.map((week) => (
+                    <Days key={week.id} week={week} placeId={1} startHour={id} />
+                  ))}
+                </tr>
+              </>
+            )
+          }
+
+          return <StartHour key={startHour} id={startHour} />
+        })}
       </tbody>
     </table>
     // <table>

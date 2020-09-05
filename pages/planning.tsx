@@ -21,15 +21,23 @@ const PlanningPage = () => {
       <Head>
         <title>Planning stand de tir 10m Palaiseau</title>
       </Head>
+      <div>
+        <p>Ce planning vous permet de réserver des créneaux pour le stand 10m.</p>
+        <p>Vous pouvez réserver par créneau d'une heure. Vous pouvez réserver plusieurs créneaux sur 2 semaines</p>
+        <p>
+          Il y a 6 places pour la précision (carabine / pistolet) et 1 place pour la vitesse pistolet, par séance d'une
+          heure.
+        </p>
+      </div>
       <Planning
         planning={planning}
-        displayCell={({ day, hour, week }) => {
+        displayCell={({ day, hour, week, place }) => {
           const Infos = () => (
             <>
               <br />
-              {hour.waiting} en attente
+              {place.waiting} en attente
               <br />
-              {hour.accepted} approuvé
+              {place.accepted} approuvé
             </>
           )
 
@@ -38,39 +46,40 @@ const PlanningPage = () => {
               headers: { "Content-Type": "application/json" },
               method: "POST",
               body: JSON.stringify({
-                weekNumber: String(week.id),
-                dayNumber: String(day.id),
-                startHour: String(hour.id),
+                day: day.id,
+                hour: hour.id,
+                place: place.id,
+                week: week.id,
               }),
             }).then((res) => {
               if (res.status === 200) {
                 refetch()
               } else {
-                console.log(res.json())
+                res.json().then(console.log)
               }
             })
           }
 
-          if (hour.value !== null) {
-            const { validated } = hour.value
+          if (place.value !== null) {
+            const { validated } = place.value
             if (validated === true) {
               return () => (
                 <td key={`${week.id}-${day.id}-${hour.id}`} className="approuve">
-                  Approuvé
+                  <span className="big">Approuvé</span>
                   <Infos />
                 </td>
               )
             } else if (validated === false) {
               return () => (
                 <td key={`${week.id}-${day.id}-${hour.id}`} className="refuse">
-                  Refusé
+                  <span className="big">Refusé</span>
                   <Infos />
                 </td>
               )
             } else {
               return () => (
                 <td key={`${week.id}-${day.id}-${hour.id}`} className="attente" onClick={reserve}>
-                  En attente
+                  <span className="big">En attente</span>
                   <Infos />
                 </td>
               )
@@ -109,6 +118,64 @@ const PlanningPage = () => {
         >
           Se déconnecter
         </button>
+      </div>
+      <div className="text">
+        <div>
+          <h2>Pour réserver :</h2>
+          <ol>
+            <li>
+              <p>Cliquer sur une case de réservation (blanche)</p>
+            </li>
+            <li>
+              <p>La réservation s'affiche en orange</p>
+            </li>
+            <li>
+              <p>Après confirmation:</p>
+              <ul>
+                <li>
+                  <p>Si la case est verte: la réservation est confirmée pour cette date et heure</p>
+                </li>
+                <li>
+                  <p>Si la case est rouge: la réservation n'est pas validé pour cette date et heure</p>
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+        <div>
+          <h2 className="red">Veuillez réserver :</h2>
+          <ul className="red">
+            <li>
+              <p>Pour les créneaux mercredi, avant le lundi soir à minuit</p>
+            </li>
+            <li>
+              <p>Pour les créneaux du dimanche, avant le vendredi soir à minuit</p>
+            </li>
+          </ul>
+          <p>Après ces dates (lundi soir et vendredi soir), les réservations ne seront pas prises en compte.</p>
+        </div>
+        <div>
+          <h2>La confirmation ou non de vos réservations est terminée au plus tard :</h2>
+          <ul>
+            <li>
+              <p>Pour les créneaux du mercredi, avant le mardi soir à minuit</p>
+            </li>
+            <li>
+              <p>Pour les créneaux du dimanche, avant le samedi soir à minuit</p>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p>
+            Pour toute information complémentaire, ou problème de réservation, vous pouvez poser vos questions{" "}
+            <a href="https://www.ctpal.fr/page/445112-contact" target="_blank">
+              ici
+            </a>
+            .
+          </p>
+          <h3>Remarque :</h3>
+          <p>Sur une réservation en attente, ou approuvé, l'utilisateur peut se désinscrire.</p>
+        </div>
       </div>
     </div>
   )
