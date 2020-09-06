@@ -10,7 +10,7 @@ const Index = () => {
       <Head>
         <title>Connection | Planning stand de tir 10m Palaiseau</title>
       </Head>
-      <h1>Planning de réservation des séances du mercredi et dimanche au stand de tir 10m Palaiseau</h1>
+      <h1 className="title">Planning de réservation des séances du mercredi et dimanche au stand de tir 10m Palaiseau</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()
