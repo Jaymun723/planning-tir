@@ -38,7 +38,7 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
       approval,
       day,
       hour,
-      name,
+      name: userName,
       place,
       week,
     })

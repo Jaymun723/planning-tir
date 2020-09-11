@@ -4,13 +4,16 @@ import Head from "next/head"
 
 const Index = () => {
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   return (
-    <div className="page">
+    <div className={`page${loading ? " loading" : ""}`}>
       <Head>
         <title>Connection | Planning stand de tir 10m Palaiseau</title>
       </Head>
-      <h1 className="title">Planning de réservation des séances du mercredi et dimanche au stand de tir 10m Palaiseau</h1>
+      <h1 className="title">
+        Planning de réservation des séances du mercredi et dimanche au stand de tir 10m Palaiseau
+      </h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -18,6 +21,7 @@ const Index = () => {
             name: { value: string }
             password: { value: string }
           }
+          setLoading(true)
           fetch("/api/login", {
             headers: {
               "Content-Type": "application/json",
@@ -25,6 +29,7 @@ const Index = () => {
             method: "POST",
             body: JSON.stringify({ name: target.name.value, password: target.password.value }),
           }).then((res) => {
+            setLoading(false)
             if (res.status === 200) {
               Router.push("/planning")
             } else {

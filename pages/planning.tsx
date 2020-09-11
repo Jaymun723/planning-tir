@@ -5,11 +5,12 @@ import moment from "moment"
 import { Planning } from "../components/Planning"
 import Router from "next/router"
 import Head from "next/head"
+import { useState } from "react"
 
 moment.locale("fr")
 
 const PlanningPage = () => {
-  const [planning, refetch] = useApi<{ weeks: UserWeek[] }>("/api/planning", { redirectWhenFail: "/" })
+  const [planning, refetch, loading] = useApi<{ weeks: UserWeek[] }>("/api/planning", { redirectWhenFail: "/" })
   const [data] = useApi<{ user: User }>("/api/user")
 
   if (!planning) {
@@ -17,7 +18,7 @@ const PlanningPage = () => {
   }
 
   return (
-    <div className="page">
+    <div className={`page${loading ? " loading" : ""}`}>
       <Head>
         <title>Planning stand de tir 10m Palaiseau</title>
       </Head>

@@ -27,10 +27,11 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
     <table>
       <thead>
         <tr>
-          <td className="coin"></td>
+          <td className="coin" />
+          <td className="coin" />
           {planning.weeks.map((week) => {
-            const start = moment().week(week.id)
-            const end = moment().week(week.id).add(6, "days")
+            const start = moment().week(week.id).weekday(0)
+            const end = moment().week(week.id).weekday(6)
             return (
               <th colSpan={week.days.length} scope="col" key={week.id}>
                 Semaine {week.id}

@@ -7,7 +7,7 @@ import { UsersHistory } from "../components/UsersHisotry"
 import { UserHistory } from "../lib/usersHistory"
 
 const AdminPage = () => {
-  const [planning, refetch] = useApi<{ weeks: Week[]; users: UserHistory[] }>("/api/planning/admin", {
+  const [planning, refetch, loading] = useApi<{ weeks: Week[]; users: UserHistory[] }>("/api/planning/admin", {
     redirectWhenFail: "/",
   })
 
@@ -41,7 +41,7 @@ const AdminPage = () => {
   }
 
   return (
-    <div className="page">
+    <div className={`page${loading ? " loading" : ""}`}>
       <Head>
         <title>Admin | Planning stand de tir 10m Palaiseau</title>
       </Head>

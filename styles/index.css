@@ -52,6 +52,10 @@ tr td.coin {
   cursor: pointer;
 }
 
+.loading .reservation {
+  cursor: progress;
+}
+
 .vide {
   background-color: rgb(230, 230, 230);
 }
@@ -61,6 +65,10 @@ tr td.attente {
   cursor: pointer;
 }
 
+.loading tr td.attente {
+  cursor: progress;
+}
+
 tr td.refuse {
   background-color: red;
 }
@@ -68,6 +76,10 @@ tr td.refuse {
 tr td.approuve {
   background-color: green;
   cursor: pointer;
+}
+
+.loading tr td.approuve {
+  cursor: progress;
 }
 
 .utilisateurs {
