@@ -98,7 +98,7 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
                   </th>
                   <th>
                     {PLACES_MAP[0].name}: <br />
-                    {PLACES_MAP[0].max} places
+                    {PLACES_MAP[0].max} places au total
                   </th>
                   {planning.weeks.map((week) => (
                     <Days key={week.id} week={week} placeId={0} startHour={id} />
@@ -107,7 +107,7 @@ export function Planning<T>({ planning, displayCell }: PlanningProps<T>) {
                 <tr>
                   <th>
                     {PLACES_MAP[1].name}: <br />
-                    {PLACES_MAP[1].max} place
+                    {PLACES_MAP[1].max} place au total
                   </th>
                   {planning.weeks.map((week) => (
                     <Days key={week.id} week={week} placeId={1} startHour={id} />

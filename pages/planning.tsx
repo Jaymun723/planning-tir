@@ -24,7 +24,7 @@ const PlanningPage = () => {
       </Head>
       <div>
         <p>Ce planning vous permet de réserver des créneaux pour le stand 10m.</p>
-        <p>Vous pouvez réserver par créneau d'une heure. Vous pouvez réserver plusieurs créneaux sur 2 semaines</p>
+        <p>Vous pouvez réserver par créneau d'une heure. Vous pouvez réserver plusieurs créneaux sur 2 semaines.</p>
         <p>
           Il y a 6 places pour la précision (carabine / pistolet) et 1 place pour la vitesse pistolet, par séance d'une
           heure.
@@ -38,7 +38,7 @@ const PlanningPage = () => {
               <br />
               {place.waiting} en attente
               <br />
-              {place.accepted} approuvé
+              {place.accepted} approuvée{place.accepted > 1 ? "s" : ""}
             </>
           )
 
@@ -66,14 +66,14 @@ const PlanningPage = () => {
             if (validated === true) {
               return () => (
                 <td key={`${week.id}-${day.id}-${hour.id}`} className="approuve" onClick={reserve}>
-                  <span className="big">Approuvé</span>
+                  <span className="big">Approuvée</span>
                   <Infos />
                 </td>
               )
             } else if (validated === false) {
               return () => (
                 <td key={`${week.id}-${day.id}-${hour.id}`} className="refuse">
-                  <span className="big">Refusé</span>
+                  <span className="big">Refusée</span>
                   <Infos />
                 </td>
               )
@@ -88,7 +88,7 @@ const PlanningPage = () => {
           } else {
             return () => (
               <td key={`${week.id}-${day.id}-${hour.id}`} className="reservation" onClick={reserve}>
-                Réservez
+                <span className="big">Réservez</span>
                 <Infos />
               </td>
             )
@@ -137,7 +137,7 @@ const PlanningPage = () => {
                   <p>Si la case est verte: la réservation est confirmée pour cette date et heure</p>
                 </li>
                 <li>
-                  <p>Si la case est rouge: la réservation n'est pas validé pour cette date et heure</p>
+                  <p>Si la case est rouge: la réservation n'est pas validée pour cette date et heure</p>
                 </li>
               </ul>
             </li>
@@ -147,7 +147,7 @@ const PlanningPage = () => {
           <h2 className="red">Veuillez réserver :</h2>
           <ul className="red">
             <li>
-              <p>Pour les créneaux mercredi, avant le lundi soir à minuit</p>
+              <p>Pour les créneaux du mercredi, avant le lundi soir à minuit</p>
             </li>
             <li>
               <p>Pour les créneaux du dimanche, avant le vendredi soir à minuit</p>
@@ -168,14 +168,16 @@ const PlanningPage = () => {
         </div>
         <div>
           <p>
-            Pour toute information complémentaire, ou problème de réservation, vous pouvez poser vos questions{" "}
-            <a href="https://www.ctpal.fr/page/445112-contact" target="_blank">
-              ici
-            </a>
-            .
+            <strong>
+              Pour toute information complémentaire, ou problème de réservation, vous pouvez poser vos questions{" "}
+              <a href="https://www.ctpal.fr/page/445112-contact" target="_blank">
+                ici
+              </a>
+              .
+            </strong>
           </p>
           <h3>Remarque :</h3>
-          <p>Sur une réservation en attente, ou approuvé, l'utilisateur peut se désinscrire.</p>
+          <p>Sur une réservation en attente, ou approuvée, l'utilisateur peut se désinscrire.</p>
         </div>
       </div>
     </div>

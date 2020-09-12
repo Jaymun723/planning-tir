@@ -18,7 +18,7 @@ export const loginUser = async (userName: string, userPassword: string) => {
     throw new Error("Échec de la connection.")
   }
 
-  const hashMatch = compare(userPassword, user.password)
+  const hashMatch = await compare(userPassword, user.password)
 
   if (!hashMatch) {
     throw new Error("Échec de la connection.")
