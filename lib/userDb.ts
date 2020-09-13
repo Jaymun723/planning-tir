@@ -5,6 +5,7 @@ export interface User {
   name: string
   password: string
   isAdmin: boolean
+  email: string
 }
 
 export const loginUser = async (userName: string, userPassword: string) => {
