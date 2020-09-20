@@ -15,6 +15,6 @@ export const START_HOURS: { [dayId: number]: number[] } = {
 
 export const PLACES = [0, 1]
 export const PLACES_MAP: { [id: number]: { name: string; max: number } } = {
-  0: { name: "Précision", max: 6 },
+  0: { name: "Précision", max: 7 },
   1: { name: "Vitesse", max: 1 },
 }

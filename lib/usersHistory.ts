@@ -22,7 +22,19 @@ export const getUsersHistory = async () => {
   const weeksCollection = db.collection<Week>("weeks")
   const usersCollection = db.collection<User>("users")
 
-  const users: UserHistory[] = (await usersCollection.find({}).toArray()).map((user) => ({
+  const dbUsers = (await usersCollection.find({}).toArray()).sort((a, b) => {
+    const user1 = a.name.toUpperCase()
+    const user2 = b.name.toUpperCase()
+    if (user1 < user2) {
+      return -1
+    }
+    if (user1 > user2) {
+      return 1
+    }
+    return 0
+  })
+
+  const users: UserHistory[] = dbUsers.map((user) => ({
     name: user.name,
     days: WEEK_DAYS.map((id) => ({
       id,
