@@ -5,7 +5,6 @@ import moment from "moment"
 import { Planning } from "../components/Planning"
 import Router from "next/router"
 import Head from "next/head"
-import { useState } from "react"
 
 moment.locale("fr")
 
@@ -44,7 +43,7 @@ const PlanningPage = () => {
 
           const reserve = () => {
             fetch("/api/planning/reserve", {
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "application/json", authorization: localStorage.getItem("token")! },
               method: "POST",
               body: JSON.stringify({
                 day: day.id,
@@ -112,9 +111,8 @@ const PlanningPage = () => {
         )}
         <button
           onClick={() => {
-            fetch("/api/logout").then(() => {
-              Router.push("/")
-            })
+            localStorage.removeItem("token")
+            Router.push("/")
           }}
         >
           Se déconnecter

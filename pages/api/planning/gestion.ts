@@ -1,18 +1,17 @@
-import { withSession, ApiRequest } from "../../../lib/session"
-import { NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next"
 import { getUser } from "../../../lib/userDb"
 import { setApproval } from "../../../lib/planningDb"
 import { getAcceptedMail, getRejectedMail, sendMail } from "../../../lib/mail"
+import { authUser } from "../../../lib/auth"
 
-export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
-  const name = req.session.get("name")
-  if (!name) {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const adminUser = authUser(req)
+  if (!adminUser) {
     res.status(401).json({ message: "Connection nécessaire." })
     return
   }
 
-  const user = await getUser(name)
-  if (!user || !user?.isAdmin) {
+  if (!adminUser.isAdmin) {
     res.status(401).json({ message: "Vous devez être administrateur." })
     return
   }
@@ -73,4 +72,4 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
   res.status(200).json({
     message: `ok`,
   })
-})
+}

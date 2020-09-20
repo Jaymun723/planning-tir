@@ -31,7 +31,10 @@ const Index = () => {
           }).then((res) => {
             setLoading(false)
             if (res.status === 200) {
-              Router.push("/planning")
+              res.json().then((data) => {
+                localStorage.setItem("token", data.token)
+                Router.push("/planning")
+              })
             } else {
               res.json().then((err) => setError(err.message))
             }

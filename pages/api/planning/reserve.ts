@@ -1,11 +1,12 @@
-import { ApiRequest, withSession } from "../../../lib/session"
-import { NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next"
 import { setReservation } from "../../../lib/planningDb"
 import { PLACES_MAP } from "../../../lib/consts"
+import { authUser } from "../../../lib/auth"
 
-export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
-  const name = req.session.get("name")
-  if (!name) {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = authUser(req)
+
+  if (!user) {
     res.status(401).json({ message: "Connection nécessaire." })
     return
   }
@@ -22,7 +23,7 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
       await setReservation({
         day,
         hour,
-        name,
+        name: user.name,
         place,
         week,
       })
@@ -35,4 +36,4 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
   } else {
     res.status(405).json({ message: "Mauvaise méthode." })
   }
-})
+}

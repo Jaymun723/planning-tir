@@ -166,7 +166,7 @@ const AdminPage = () => {
             )
             if (!ok) return
             fetch("/api/planning/gestion", {
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "application/json", authorization: localStorage.getItem("token")! },
               method: "POST",
               body: JSON.stringify({ approvals: verifications }),
             }).then((res) => {

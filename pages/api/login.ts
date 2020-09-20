@@ -1,15 +1,13 @@
-import { NextApiResponse } from "next"
+import { sign } from "jsonwebtoken"
+import { NextApiRequest, NextApiResponse } from "next"
 import { loginUser } from "../../lib/userDb"
-import { withSession, ApiRequest } from "../../lib/session"
 
-export default withSession((req: ApiRequest, res: NextApiResponse) => {
+export default (req: NextApiRequest, res: NextApiResponse) => {
   if (req.body.name && req.body.password) {
     loginUser(req.body.name, req.body.password)
       .then((user) => {
-        req.session.set("name", user.name)
-        req.session.save().then(() => {
-          res.status(200).json({ message: "Connection établie." })
-        })
+        const token = sign({ name: user.name, isAdmin: user.isAdmin }, process.env.SECRET_COOKIE_PASSWORD!)
+        res.status(200).json({ message: "Connection établie.", token })
       })
       .catch((err) => {
         res.status(401).json({ message: err.message })
@@ -17,4 +15,4 @@ export default withSession((req: ApiRequest, res: NextApiResponse) => {
   } else {
     res.status(400).json({ message: "Mauvaise requête." })
   }
-})
+}

@@ -1,22 +1,21 @@
-import { withSession, ApiRequest } from "../../../lib/session"
-import { NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next"
 import { getUser } from "../../../lib/userDb"
 import { WEEKS_PREVIEW_COUNT } from "./"
 import moment from "moment"
 import { getWeeks } from "../../../lib/planningDb"
 import { getUsersHistory } from "../../../lib/usersHistory"
+import { authUser } from "../../../lib/auth"
 
 moment.locale("fr")
 
-export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
-  const name = req.session.get("name")
-  if (!name) {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const user = authUser(req)
+  if (!user) {
     res.status(401).json({ message: "Connection nécessaire." })
     return
   }
 
-  const user = await getUser(name)
-  if (!user || !user.isAdmin) {
+  if (!user.isAdmin) {
     res.status(401).json({ message: "Vous devez être administrateur." })
     return
   }
@@ -28,4 +27,4 @@ export default withSession(async (req: ApiRequest, res: NextApiResponse) => {
   }
 
   res.status(200).json({ weeks: await getWeeks(weeksNumbers), users: await getUsersHistory() })
-})
+}
