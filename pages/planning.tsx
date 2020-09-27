@@ -71,7 +71,7 @@ const PlanningPage = () => {
               )
             } else if (validated === false) {
               return () => (
-                <td key={`${week.id}-${day.id}-${hour.id}`} className="refuse">
+                <td key={`${week.id}-${day.id}-${hour.id}`} className="refuse" onClick={reserve}>
                   <span className="big">Refusée</span>
                   <Infos />
                 </td>
