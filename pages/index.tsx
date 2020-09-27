@@ -12,7 +12,7 @@ const Index = () => {
         <title>Connection | Planning stand de tir 10m Palaiseau</title>
       </Head>
       <h1 className="title">
-        Planning de réservation des séances du mercredi et dimanche au stand de tir 10m Palaiseau
+        Planning de réservation des séances du mercredi, samedi et dimanche au stand de tir 10m Palaiseau
       </h1>
       <form
         onSubmit={(e) => {
@@ -52,7 +52,7 @@ const Index = () => {
             <button onClick={() => setError("")}>X</button>
           </p>
         )}
-        <label htmlFor="name">Nom:</label>
+        <label htmlFor="name">Identifiant:</label>
         <input type="text" name="name" />
         <label htmlFor="password">Mot de passe:</label>
         <input type="password" name="password" />

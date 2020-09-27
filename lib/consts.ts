@@ -4,12 +4,13 @@ export const WEEK_DAYS = [
   2, // mercredi,
   // 3, // jeudi
   // 4, // vendredi
-  // 5, // samedi
+  5, // samedi
   6, // dimanche
 ]
 
 export const START_HOURS: { [dayId: number]: number[] } = {
   2: [20, 21],
+  5: [14],
   6: [10, 11],
 }
 

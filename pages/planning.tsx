@@ -104,7 +104,7 @@ const PlanningPage = () => {
                   Router.push("/admin")
                 }}
               >
-                Aller sur la page administrateur
+                Accès page administrateur
               </button>
             )}
           </>
