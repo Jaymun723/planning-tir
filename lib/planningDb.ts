@@ -153,6 +153,9 @@ export const setReservation = async (ops: SetReservationOptions) => {
   } else if (user.validated === true) {
     place.accepted--
     place.value = place.value.filter((user) => user.userName !== ops.name)
+  } else if (user.validated === false) {
+    place.accepted--
+    place.value = place.value.filter((user) => user.userName !== ops.name)
   }
 
   await weeksCollection.updateOne({ id: ops.week }, { $set: { days: week.days } })

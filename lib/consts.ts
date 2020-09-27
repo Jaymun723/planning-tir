@@ -10,7 +10,7 @@ export const WEEK_DAYS = [
 
 export const START_HOURS: { [dayId: number]: number[] } = {
   2: [20, 21],
-  5: [14],
+  5: [14, 15],
   6: [10, 11],
 }
 

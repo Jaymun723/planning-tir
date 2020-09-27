@@ -112,6 +112,7 @@ tr td.approuve {
 
 .refuse {
   background-color: red;
+  cursor: pointer;
 }
 
 .big {
