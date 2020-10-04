@@ -148,6 +148,9 @@ const PlanningPage = () => {
               <p>Pour les créneaux du mercredi, avant le lundi soir à minuit</p>
             </li>
             <li>
+              <p>Pour les créneaux du samedi, avant le jeudi soir à minuit</p>
+            </li>
+            <li>
               <p>Pour les créneaux du dimanche, avant le vendredi soir à minuit</p>
             </li>
           </ul>
@@ -158,6 +161,9 @@ const PlanningPage = () => {
           <ul>
             <li>
               <p>Pour les créneaux du mercredi, avant le mardi soir à minuit</p>
+            </li>
+            <li>
+              <p>Pour les créneaux du samedi, avant le vendredi soir à minuit</p>
             </li>
             <li>
               <p>Pour les créneaux du dimanche, avant le samedi soir à minuit</p>
