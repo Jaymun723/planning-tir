@@ -10,6 +10,7 @@ interface GetMailOptions {
   day: number
   hour: number
   place: number
+  name: string
 }
 export const getAcceptedMail = (ops: GetMailOptions) => ({
   text: `Bonjour,
@@ -21,7 +22,9 @@ La réservation du créneau de ${ops.hour}h à ${ops.hour + 1}h du ${moment()
 
 Cordialement,
 
-Club de Tir de Palaiseau.  
+Club de Tir de Palaiseau.
+
+Mail envoyé à ${ops.name} par ${process.env.SITE_URL}
 `,
   title: `Réservation confirmée pour séance de ${PLACES_MAP[ops.place].name} de ${ops.hour}h à ${
     ops.hour + 1
@@ -37,7 +40,9 @@ Nous somme désolé, il n'y a plus de place disponible pour le créneau de ${ops
 
 Cordialement,
 
-Club de Tir de Palaiseau.  
+Club de Tir de Palaiseau.
+
+Mail envoyé à ${ops.name} par ${process.env.SITE_URL}
 `,
   title: `Réservation impossible pour séance de ${PLACES_MAP[ops.place].name} de ${ops.hour}h à ${
     ops.hour + 1

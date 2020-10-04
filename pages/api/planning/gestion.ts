@@ -57,7 +57,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(400).json({ message: err.message })
       })
 
-      const mail = approval ? getAcceptedMail({ place, week, day, hour }) : getRejectedMail({ place, week, day, hour })
+      const mail = approval ? getAcceptedMail({ place, week, day, hour, name: userName }) : getRejectedMail({ place, week, day, hour, name: userName })
       await sendMail({
         content: mail.text,
         subject: mail.title,
