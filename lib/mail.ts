@@ -31,12 +31,29 @@ Mail envoyé à ${ops.name} par ${process.env.SITE_URL}
   }h le ${moment().week(ops.week).weekday(ops.day).format("DD[/]MM[/]YYYY")} au stand 10m`,
 })
 
+// export const getRejectedMail = (ops: GetMailOptions) => ({
+//   text: `Bonjour,
+
+// Nous somme désolé, il n'y a plus de place disponible pour le créneau de ${ops.hour}h à ${
+//     ops.hour + 1
+//   }h du ${moment().week(ops.week).weekday(ops.day).format("D MMMM YYYY")} à la ${PLACES_MAP[ops.place].name}.
+
+// Cordialement,
+
+// Club de Tir de Palaiseau.
+
+// Mail envoyé à ${ops.name} par ${process.env.SITE_URL}
+// `,
+//   title: `Réservation impossible pour séance de ${PLACES_MAP[ops.place].name} de ${ops.hour}h à ${
+//     ops.hour + 1
+//   }h le ${moment().week(ops.week).weekday(ops.day).format("DD[/]MM[/]YYYY")} au stand 10m`,
+// })
+
 export const getRejectedMail = (ops: GetMailOptions) => ({
   text: `Bonjour,
 
-Nous somme désolé, il n'y a plus de place disponible pour le créneau de ${ops.hour}h à ${
-    ops.hour + 1
-  }h du ${moment().week(ops.week).weekday(ops.day).format("D MMMM YYYY")} à la ${PLACES_MAP[ops.place].name}.
+Nous somme désolé, le stand 10m est fermé au moins jusqu'au 26 octobre.
+C'est une décision du préfet et de la mairie pour des raisons sanitaires.
 
 Cordialement,
 
