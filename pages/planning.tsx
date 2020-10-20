@@ -29,71 +29,73 @@ const PlanningPage = () => {
           heure.
         </p>
       </div>
-      <Planning
-        planning={planning}
-        displayCell={({ day, hour, week, place }) => {
-          const Infos = () => (
-            <>
-              <br />
-              {place.waiting} en attente
-              <br />
-              {place.accepted} approuvée{place.accepted > 1 ? "s" : ""}
-            </>
-          )
+      <div className="table-wrapper">
+        <Planning
+          planning={planning}
+          displayCell={({ day, hour, week, place }) => {
+            const Infos = () => (
+              <>
+                <br />
+                {place.waiting} en attente
+                <br />
+                {place.accepted} approuvée{place.accepted > 1 ? "s" : ""}
+              </>
+            )
 
-          const reserve = () => {
-            fetch("/api/planning/reserve", {
-              headers: { "Content-Type": "application/json", authorization: localStorage.getItem("token")! },
-              method: "POST",
-              body: JSON.stringify({
-                day: day.id,
-                hour: hour.id,
-                place: place.id,
-                week: week.id,
-              }),
-            }).then((res) => {
-              if (res.status === 200) {
-                refetch()
+            const reserve = () => {
+              fetch("/api/planning/reserve", {
+                headers: { "Content-Type": "application/json", authorization: localStorage.getItem("token")! },
+                method: "POST",
+                body: JSON.stringify({
+                  day: day.id,
+                  hour: hour.id,
+                  place: place.id,
+                  week: week.id,
+                }),
+              }).then((res) => {
+                if (res.status === 200) {
+                  refetch()
+                } else {
+                  res.json().then(console.log)
+                }
+              })
+            }
+
+            if (place.value !== null) {
+              const { validated } = place.value
+              if (validated === true) {
+                return () => (
+                  <td key={`${week.id}-${day.id}-${hour.id}`} className="approuve" onClick={reserve}>
+                    <span className="big">Approuvée</span>
+                    <Infos />
+                  </td>
+                )
+              } else if (validated === false) {
+                return () => (
+                  <td key={`${week.id}-${day.id}-${hour.id}`} className="refuse" onClick={reserve}>
+                    <span className="big">Refusée</span>
+                    <Infos />
+                  </td>
+                )
               } else {
-                res.json().then(console.log)
+                return () => (
+                  <td key={`${week.id}-${day.id}-${hour.id}`} className="attente" onClick={reserve}>
+                    <span className="big">En attente</span>
+                    <Infos />
+                  </td>
+                )
               }
-            })
-          }
-
-          if (place.value !== null) {
-            const { validated } = place.value
-            if (validated === true) {
-              return () => (
-                <td key={`${week.id}-${day.id}-${hour.id}`} className="approuve" onClick={reserve}>
-                  <span className="big">Approuvée</span>
-                  <Infos />
-                </td>
-              )
-            } else if (validated === false) {
-              return () => (
-                <td key={`${week.id}-${day.id}-${hour.id}`} className="refuse" onClick={reserve}>
-                  <span className="big">Refusée</span>
-                  <Infos />
-                </td>
-              )
             } else {
               return () => (
-                <td key={`${week.id}-${day.id}-${hour.id}`} className="attente" onClick={reserve}>
-                  <span className="big">En attente</span>
+                <td key={`${week.id}-${day.id}-${hour.id}`} className="reservation" onClick={reserve}>
+                  <span className="big">Réservez</span>
                   <Infos />
                 </td>
               )
             }
-          } else {
-            return () => (
-              <td key={`${week.id}-${day.id}-${hour.id}`} className="reservation" onClick={reserve}>
-                <span className="big">Réservez</span>
-                <Infos />
-              </td>
-            )
-          }
-        }}
-      />
+          }}
+        />
+      </div>
       <div>
         {data?.user && (
           <>
