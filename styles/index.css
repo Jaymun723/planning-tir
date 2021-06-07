@@ -9,25 +9,12 @@ html {
 }
 
 .page {
-  /* margin-top: 5vh; */
-  width: 100%;
   display: flex;
-  /* align-items: center; */
+  align-items: center;
   flex-direction: column;
 }
 
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.table-wrapper,
-.table-wrapper table {
-  transform: rotate(180deg);
-}
-
 table {
-  transform: rotate(180deg);
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
   letter-spacing: 1px;
