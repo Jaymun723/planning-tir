@@ -4,7 +4,7 @@ export const WEEK_DAYS = [
   2, // mercredi,
   // 3, // jeudi
   // 4, // vendredi
-  5, // samedi
+  // 5, // samedi
   6, // dimanche
 ]
 
