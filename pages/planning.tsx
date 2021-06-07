@@ -25,7 +25,7 @@ const PlanningPage = () => {
         <p>Ce planning vous permet de réserver des créneaux pour le stand 10m.</p>
         <p>Vous pouvez réserver par créneau d'une heure. Vous pouvez réserver plusieurs créneaux sur 2 semaines.</p>
         <p>
-          Il y a 6 places pour la précision (carabine / pistolet) et 1 place pour la vitesse pistolet, par séance d'une
+          Il y a 7 places pour la précision (carabine / pistolet) et 1 place pour la vitesse pistolet, par séance d'une
           heure.
         </p>
       </div>
