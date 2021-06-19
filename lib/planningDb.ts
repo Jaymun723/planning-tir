@@ -147,14 +147,14 @@ export const setReservation = async (ops: SetReservationOptions) => {
   if (!user) {
     place.waiting++
     place.value.push({ userName: ops.name, validated: null })
-  } else if (user.validated === null) {
-    place.waiting = Math.max(0, place.waiting - 1)
+  } else if (user.validated === null && place.waiting >= 1) {
+    place.waiting--
     place.value = place.value.filter((user) => user.userName !== ops.name)
-  } else if (user.validated === true) {
-    place.accepted = Math.max(0, place.waiting - 1)
+  } else if (user.validated === true && place.accepted >= 1) {
+    place.accepted--
     place.value = place.value.filter((user) => user.userName !== ops.name)
-  } else if (user.validated === false) {
-    place.accepted = Math.max(0, place.waiting - 1)
+  } else if (user.validated === false && place.accepted >= 1) {
+    place.accepted--
     place.value = place.value.filter((user) => user.userName !== ops.name)
   }
 
